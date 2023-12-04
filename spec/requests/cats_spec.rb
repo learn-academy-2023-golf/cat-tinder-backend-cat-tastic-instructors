@@ -105,4 +105,38 @@ RSpec.describe "Cats", type: :request do
       expect(cats).to be_empty
     end
   end
+
+  describe "cannot create a cat without valid attributes" do 
+    it "doesn't create a cat without a name" do 
+      cat_params = {
+        cat: {
+          age: 7,
+          enjoys: 'Teasing the dogs',
+          image: 'https://images.unsplash.com/photo-1529778873920-4da4926a72c2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1036&q=80'
+        }
+      }
+
+      post '/cats', params: cat_params
+
+      expect(response.status).to eq 422
+
+      cat = JSON.parse(response.body)
+      expect(cat['name']).to include "can't be blank"
+    end
+
+    it "cannot create a cat without an age" do 
+      cat_params = {
+        cat: {
+          name: 'Tobey',
+          enjoys: 'Teasing the dogs',
+          image: 'https://images.unsplash.com/photo-1529778873920-4da4926a72c2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1036&q=80'
+        }
+      }
+
+      post '/cats', params: cat_params
+      cat = JSON.parse(response.body)
+      expect(response).to have_http_status(422)
+      expect(cat['age']).to include "can't be blank"
+    end
+  end
 end
